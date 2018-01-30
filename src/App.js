@@ -1,22 +1,21 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import ChatInput from './ChatInput';
-// import Messages from './Messages';
+import Messages from './Messages';
 
-class Messages extends Component{
-  render(){
-    var messageList = this.props.m.map((message, index) => {
-                    return <li key={index}>
+// class Messages extends Component{
+//   render(){
+//     var messageList = this.props.m.map((message, index) => {
+//                     return <li key={index}>
                     
-                      <img src="https://www.eg.bucknell.edu/~amm042/ic_account_circle_black_24dp_2x.png" className="icon" alt="logo" align="left" width="20px"/>
-                      <div align="left">{message}</div>
+//                       <img src="https://www.eg.bucknell.edu/~amm042/ic_account_circle_black_24dp_2x.png" className="icon" alt="logo" align="left" width="20px"/>
+//                       <div align="left">{message}</div>
                     
-                    </li>;
-                  });
-    return  <ul>{ messageList }</ul>
-  }
-}
+//                     </li>;
+//                   });
+//     return  <ul>{ messageList }</ul>
+//   }
+// }
 
 class App extends Component {
   constructor(props){
@@ -25,29 +24,38 @@ class App extends Component {
     this.sendHandler = this.sendHandler.bind(this);
     this.mqtt = require('mqtt');
     this.client  = this.mqtt.connect('ws://mqtt.bucknell.edu:9001');
+    //this.file = new File();
   }
 
   componentWillMount(){
     console.log(this.props.username);
     this.client.on('connect', ()=>{
-      this.client.publish('announce',  this.props.username.toString()+' joined!')
+
+      // Welcoming message
+      var welcomeMessage = {
+        username: this.props.username,
+        message: 'joined',
+        welcome: true,
+        fromMe: false
+      }
+
+      // convert it to Json object
+      var welcomeMessageJson = JSON.stringify(welcomeMessage);
+      this.client.publish('announce',  welcomeMessageJson)
+
       // sub after pub so we don't get our own announcement
       this.client.subscribe('announce');
     });
 
-    this.client.on('message', (topic,message)=>{
-      console.log('Incoming message: ' + message.toString());
+    this.client.on('message', (topic,messageJson)=>{
+      var msg = JSON.parse(messageJson);
+      console.log('Incoming message: ' + msg.message.toString() );
       
-      // if(message.username=this.props.username){
-      //   message.fromMe = true;
-      // }
-      const m = message.toString()+' '+ new Date();
-      this.addMessage(m);
-      // this.setState((prevState, props)=> {
-        
-      //   return {messages:prevState.messages.concat(
-      //     message.toString()+ new Date() )}
-      //   })
+      if(msg.username === this.props.username){
+        msg.fromMe = true;
+      }
+
+      this.addMessage(msg);
       });
   }
 
@@ -63,23 +71,21 @@ class App extends Component {
   }
 
   sendHandler(msg){
-    // const messageObject = {
-    //   username: this.props.username,
-    //   msg
-    // };
+    var messageObject = {
+      username: this.props.username,
+      message: msg,
+      date: new Date(),
+      fromMe: false
+    };
     console.log("MQTT sending: " + msg.toString());
-    this.client.publish('announce', this.props.username.toString()+': '+msg);
+    var messageJson = JSON.stringify(messageObject);
+    this.client.publish('announce', messageJson);
   }
 
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">React Chat App</h1>
-        </header>
-        
-        <Messages m={this.state.messages}/>
+        <Messages messages={this.state.messages}/>
         <ChatInput onSend={this.sendHandler}/>
       </div>
     );

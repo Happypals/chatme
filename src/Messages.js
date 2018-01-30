@@ -15,6 +15,7 @@ class Messages extends React.Component {
         return (
           <Message
             key={i}
+            date={message.date}
             username={message.username}
             message={message.message}
             fromMe={message.fromMe} />
