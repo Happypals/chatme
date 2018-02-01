@@ -16,6 +16,16 @@ import Messages from './Messages';
 //     return  <ul>{ messageList }</ul>
 //   }
 // }
+function formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return strTime;
+} 
 
 class App extends Component {
   constructor(props){
@@ -41,10 +51,10 @@ class App extends Component {
 
       // convert it to Json object
       var welcomeMessageJson = JSON.stringify(welcomeMessage);
-      this.client.publish('announce',  welcomeMessageJson)
+      this.client.publish('/root/chatme/xl006/*',  welcomeMessageJson)
 
       // sub after pub so we don't get our own announcement
-      this.client.subscribe('announce');
+      this.client.subscribe('/root/chatme/xl006/#');
     });
 
     this.client.on('message', (topic,messageJson)=>{
@@ -71,20 +81,22 @@ class App extends Component {
   }
 
   sendHandler(msg){
+    var dte = new Date();
     var messageObject = {
       username: this.props.username,
       message: msg,
-      date: new Date(),
+      date: formatAMPM(dte),
       fromMe: false
     };
     console.log("MQTT sending: " + msg.toString());
     var messageJson = JSON.stringify(messageObject);
-    this.client.publish('announce', messageJson);
+    this.client.publish('/root/chatme/xl006/*', messageJson);
   }
 
   render() {
     return (
       <div className="App">
+        
         <Messages messages={this.state.messages}/>
         <ChatInput onSend={this.sendHandler}/>
       </div>

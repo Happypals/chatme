@@ -1,16 +1,13 @@
 .App {
-  
+  width:80%;
+  margin-right: 140px;
+  margin-left: 140px;
 }
 
 .welcomeMessage{
   text-align: center;
 
 }
-.container {
-  display: flex;
-  flex-direction: column;
-}
-
 .messages {
   overflow-y: scroll;
   overflow-x: hidden;
@@ -19,67 +16,58 @@
 }
 
 h3 {
-  text-align: center;
+  text-align: left;
   padding: 20px 0;
   margin: 0;
   border-bottom: 1px solid #ddd;
-  background-color: #eee;
+  
+}
+.panel.from-me{
+
+}
+.panel{
+  
 }
 
-.message.from-me .date{
-  style: flex-end;
-  font: 5px;
-}
 .chat-input {
-  position: relative;
-  overflow: hidden;
+  position: absolute;
+
+  width:60%;
   padding: 0 40px;
-  flex-shrink: 0;
+  flex-shrink: 0px;
+  border:0;padding:10px;background:whitesmoke;
 }
+
 
 .chat-input input[type="text"] {
-  width: 100%;
-  margin-left: -20px;
-  margin-right: -20px;
+  
+  margin-left: 10px;
+  margin-right: 20px;
+  width:90%;display:flex;flex-direction:column;
+
 
 }
-
-.message.from-me .username {
-  display: none;
+.MessageBody{
+  background-color: white;
 }
 
 .message.from-me {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 5px;
-}
+  padding-right: 20px;
+  
 
-.message.from-me .message-body {
-  background-color: #af9570;
-  color: white;
 }
 
 .message {
+  display: flex;
   margin-bottom: 20px;
   justify-content:flex-grow;
+  padding-left: 20px;
 
-}
-.message-body {
-  max-width: 80%;
-  display: inline-block;
-  padding: 20px;
-  background-color: #eee;
-  border: 1px;
-  border-radius: 5px;
-  padding-right: 50px;
-  justify-content:flex-grow;
 
 }
 
-.username {
-  font-weight: bold;
-  font-size: 0.9rem;
-  color: #999;
-  margin-bottom: 5px;
-}
+
 
